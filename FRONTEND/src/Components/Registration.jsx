@@ -158,7 +158,7 @@ const Registration = () => {
         formData
       );
       console.log('Backend saved:', response.data);
-
+          
       // Send confirmation email via EmailJS
       try {
         console.log('Sending email via EmailJS...');
@@ -172,6 +172,7 @@ const Registration = () => {
             duration: formData.duration,
             college: formData.college,
           },
+          
           import.meta.env.VITE_EMAILJS_PUBLIC_KEY
         );
         console.log('EmailJS: Confirmation email sent!');
