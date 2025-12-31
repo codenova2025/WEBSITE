@@ -1,7 +1,9 @@
 // backend/controllers/registerController.js
 
 const Applicant = require('../models/Applicant');
-const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
+
+const resend = new Resend(process.env.RESEND_API_KEY); // Add this to .env
 
 const register = async (req, res) => {
   try {
@@ -11,19 +13,10 @@ const register = async (req, res) => {
     await applicant.save();
     console.log('Applicant saved to DB:', applicant._id);
 
-    // Email transporter
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        host: 'smtp.gmail.com',
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-    });
-
-    const mailOptions = {
-      from: `"CodeNova" <${process.env.EMAIL_USER}>`,
-      to: applicant.email,
+    // Send email with Resend
+    await resend.emails.send({
+      from: 'Internship Team <onboarding@yourdomain.com>', // Use your verified domain or resend.dev sandbox
+      to: [applicant.email],
       subject: 'Thank You for Applying for the Internship!',
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 12px;">
@@ -61,17 +54,16 @@ const register = async (req, res) => {
           <hr style="margin: 30px 0;" />
           <p style="color: #666;">
             Warm Regards,<br/>
-            <strong>CodeNova</strong><br/>
+            <strong>Your Company Name</strong><br/>
             <em>(MSME Registered)</em><br/><br/>
-            📧 codenova31@gmail.com<br/>
+            📧 support@yourcompany.com<br/>
             🌐 www.yourwebsite.com
           </p>
         </div>
       `,
-    };
+    });
 
-    await transporter.sendMail(mailOptions);
-    console.log('Confirmation email sent to:', applicant.email);
+    console.log('Confirmation email sent via Resend to:', applicant.email);
 
     res.status(201).json({ message: 'Registration successful and email sent' });
   } catch (error) {
