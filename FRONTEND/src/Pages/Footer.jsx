@@ -9,7 +9,7 @@ import {
   MapPin,
   Code2,
 } from 'lucide-react';
-import logo from '../assets/LOGo.png';
+import logo from '../assets/LOGO.png';
 
 function Footer() {
   const scrollToTop = () => {
